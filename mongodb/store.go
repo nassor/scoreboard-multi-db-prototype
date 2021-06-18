@@ -53,6 +53,7 @@ func (st *Store) Add(ctx context.Context, projectID, id, name string, score uint
 			},
 			"$setOnInsert": bson.D{
 				// can be used to decide when clean up the dashboard
+				// or set by the user
 				{Key: "createdAt", Value: ts.UnixNano()},
 			},
 		},

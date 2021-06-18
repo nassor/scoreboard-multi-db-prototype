@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -9,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"syreclabs.com/go/faker"
 )
 
 func loadDatabase(t *testing.T) *mongo.Client {
@@ -47,4 +49,21 @@ func TestStore_Add(t *testing.T) {
 	}
 	t.Logf("\nResults: %+v (the order is asc)", something)
 
+}
+
+func TestStore_KeepAdding(t *testing.T) {
+	ctx := context.Background()
+	mc := loadDatabase(t)
+	st := NewStore(ctx, mc)
+
+	projectId := faker.Number().NumberInt64(19)
+	for i := 0; i < 50; i++ {
+		st.Add(ctx,
+			fmt.Sprintf("%d", projectId),
+			faker.Lorem().Characters(17),
+			faker.Name().Name(),
+			uint64(faker.Number().NumberInt64(7)),
+			time.Now())
+		time.Sleep(80 * time.Millisecond)
+	}
 }
